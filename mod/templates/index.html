@@ -21,21 +21,50 @@
 <body>
     <div class="container">
         <div>
-            <h2><I>GESTOR DE TAREFAS</I></h2>
+            <span style="display: flex; align-items: center; justify-content: space-between;">
+                <h2><I>GESTOR DE TAREFAS</I></h2>
+                <a class="end" href="{{url_for('todas_tarefas')}}"><button>Todas as Tarefas</button></a>
+            </span>
             <HR></HR>
-            <div class="end"><a href="{{ url_for('add_tarefa')}}"><button>Adicionar</button></a></div>
-            <br><br>
+            <div class="end"><form action="" method="post">
+            {{ form.hidden_tag() }}
+                {{ form.data() }}
+                <label for="horario">Horário:</label>
+                {{ form.time() }}
+                <label for="titulo">Tarefa:</label>
+                {{ form.tarefa() }}
+                {{ form.btn() }}
+        </form></div>
+            <br><br><br>
             <ul>
                 <form action="/" method="get">
-                    {% for tarefa in lista %}
-                    <li style="display: flex; align-items: center; justify-content: space-between;">
-                        <span>{{ tarefa.time }} - <b>{{ tarefa.tarefa }}</b></span>
-                        <span>
-                            <a href="{{ url_for('editar', id=tarefa.id) }}">Editar</a>
-                            <a href="{{ url_for('delete', id=tarefa.id) }}">Delete</a>
-                        </span>
-                    </li>
+                    {% for data, tarefa in hoje.items() %}
+                    <h3 class="center">HOJE</h3>
+                        {% for t in tarefa %}
+                            <li style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
+                                <span>
+                                    <a href="{{ url_for('editar', id=t.id) }}">Editar</a>
+                                    <a href="{{ url_for('delete', id=t.id) }}">Delete</a>
+                                </span>
+                        </li>
+                        {% endfor %}
                     <hr>
+                    <br><br>
+                    {% endfor %}
+                    {% for data, tarefa in amanha.items() %}
+                    <h3 class="center">AMANHÃ</h3>
+                        {% for t in tarefa %}
+                            <li style="display: flex; align-items: center; justify-content: space-between;">
+                            <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
+                            <span>
+                                <a href="{{ url_for('editar', id=t.id) }}">Editar</a>
+                                <a href="{{ url_for('delete', id=t.id) }}">Delete</a>
+                            </span>
+                        </li>
+                        {% endfor %}
+                    <hr>
+                    <br><br>
                     {% endfor %}
                 </form>
             </ul>
