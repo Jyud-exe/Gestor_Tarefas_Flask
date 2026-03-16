@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        .container{
+            width: 400px;
+            margin: 0 auto;
+        }
+        .end{
+            text-align: end;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i>Login</i></h2>
+        <hr>
+        <form action="/login" method="post">
+            {{ form.hidden_tag() }}
+            <p><label for="email">Email:</label>
+            {{ form.email() }}
+            <p><label for="senha">Senha:</label>
+            {{ form.senha()}}
+            {{ form.btn}}
+            <p><div class="end">Não tem uma conta?<a href="{{url_for('cadastro')}}"> Cadastre-se</a></div>
+        </form>
+    </div>
+</body>
+</html>

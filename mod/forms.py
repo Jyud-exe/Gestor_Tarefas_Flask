@@ -1,29 +1,31 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DateField
-from wtforms.validators import DataRequired
+from flask_login import current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from wtforms import StringField, SubmitField, DateField, PasswordField
+from wtforms.validators import DataRequired, Email, EqualTo, email, Regexp
 from datetime import date, timedelta
-from mod.models import Tarefas
+from mod.models import Tarefas, User
+from flask_wtf import FlaskForm
 from mod import db
 
 class TarefasForm(FlaskForm):
-    data = DateField()
-    time = StringField(validators=[DataRequired()], render_kw={"placeholder": "HH:MM"})
-    tarefa = StringField('', validators=[DataRequired()])
+    data = DateField('Data')
+    time = StringField('Horário', validators=[DataRequired()], render_kw={"placeholder": "HH:MM"})
+    tarefa = StringField('Tarefa', validators=[DataRequired()])
     btn = SubmitField('Adicionar')
 
     def save(self):
         nova_tarefa = Tarefas(
-            data=self.data.data,
-            time=self.time.data,
-            tarefa=self.tarefa.data
+             data=self.data.data,
+             time=self.time.data,
+             tarefa=self.tarefa.data,
+             user_tarefa=current_user.id
         )
-
         db.session.add(nova_tarefa)
         db.session.commit()
         return nova_tarefa
-    
+
     def Hoje(self):
-        tarefas = Tarefas.query.order_by(Tarefas.time.asc())
+        tarefas = Tarefas.query.filter_by(user_tarefa=current_user.id).order_by(Tarefas.time.asc()).all()
         hoje = {}
         for t in tarefas:
             if t.data == date.today():
@@ -34,7 +36,7 @@ class TarefasForm(FlaskForm):
         return hoje
     
     def Amanha(self):
-        tarefas = Tarefas.query.order_by(Tarefas.time.asc())
+        tarefas = Tarefas.query.filter_by(user_tarefa=current_user.id).order_by(Tarefas.time.asc()).all()
         amanha = {}
         for t in tarefas:
             if t.data == date.today() + timedelta(days=1):
@@ -45,7 +47,7 @@ class TarefasForm(FlaskForm):
         return amanha
     
     def agrupadas(self):
-        tarefas = Tarefas.query.order_by(Tarefas.time.asc())
+        tarefas = Tarefas.query.filter_by(user_tarefa=current_user.id).order_by(Tarefas.time.asc()).all()
         agrupadas = {}
         for t in tarefas:
             data = t.data.strftime('%d/%m/%Y')
@@ -53,5 +55,42 @@ class TarefasForm(FlaskForm):
                 agrupadas[data] = []
             agrupadas[data].append(t)
         return agrupadas
+    
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    senha = PasswordField('Senha', validators=[DataRequired()])
+    btn = SubmitField('Login')
 
+    def logar(self):
+        user = User.query.filter_by(email=self.email.data).first()
+        if user:
+            if check_password_hash(user.senha, self.senha.data):
+                return user
+            else:
+                raise ValueError('Senha inválida!')
+        else:
+            raise ValueError('Usuário inválido!')
+
+class cadForm(FlaskForm):
+    nome = StringField('Nome', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    senha = PasswordField('Senha', validators=[DataRequired(), Regexp(r'(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])', message='A senha deve conter letras, números e caracteres especiais!')])
+    confirmar_senha = PasswordField('Confirmar Senha', validators=[DataRequired(), EqualTo('senha', message='As senhas devem ser iguais!')])
+    btn = SubmitField('Cadastrar')
+
+    def save(self):
+        user = User.query.filter_by(email=self.email.data).first()
+        if user:
+            raise ValueError('Email já cadastrado!')
+        else:
+            Senha = generate_password_hash(self.senha.data)
+            novo_usuario = User(
+                nome=self.nome.data,
+                email=self.email.data,
+                senha=Senha
+            )
+
+            db.session.add(novo_usuario)
+            db.session.commit()
+            return novo_usuario
    

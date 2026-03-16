@@ -20,21 +20,22 @@
 </head>
 <body>
     <div class="container">
-        <div>
+        {% if current_user.is_authenticated %}
             <span style="display: flex; align-items: center; justify-content: space-between;">
-                <h2><I>GESTOR DE TAREFAS</I></h2>
+                <h2><I>GESTOR DE TAREFAS - {{ current_user.nome.split()[0] }}</I></h2>
                 <a class="end" href="{{url_for('todas_tarefas')}}"><button>Todas as Tarefas</button></a>
             </span>
+            <div class="end"><a href="{{url_for('logout')}}"><button>Encerrar Sessão</button></a></div>
             <HR></HR>
-            <div class="end"><form action="" method="post">
+            <div class="end"><form action="/" method="post">
             {{ form.hidden_tag() }}
                 {{ form.data() }}
-                <label for="horario">Horário:</label>
+                <label for="time">Horário:</label>
                 {{ form.time() }}
-                <label for="titulo">Tarefa:</label>
+                <label for="tarefa">Tarefa:</label>
                 {{ form.tarefa() }}
-                {{ form.btn() }}
-        </form></div>
+                {{ form.btn() }}    
+            </form></div>
             <br><br><br>
             <ul>
                 <form action="/" method="get">
@@ -52,11 +53,11 @@
                     <hr>
                     <br><br>
                     {% endfor %}
-                    {% for data, tarefa in amanha.items() %}
+                    {% for data, tarefas in amanha.items() %}
                     <h3 class="center">AMANHÃ</h3>
-                        {% for t in tarefa %}
+                        {% for t in tarefas %}
                             <li style="display: flex; align-items: center; justify-content: space-between;">
-                            <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
+                            <span>{{ t.time }} - <b>{{ t.user_tarefa }}</b></span>
                             <span>
                                 <a href="{{ url_for('editar', id=t.id) }}">Editar</a>
                                 <a href="{{ url_for('delete', id=t.id) }}">Delete</a>
@@ -68,5 +69,15 @@
                     {% endfor %}
                 </form>
             </ul>
+    </div>
+    {% else %}
+        <h2 class="center"><I>Bem-vindo ao Gestor de Tarefas</I></h2>
+        <hr>
+        <div class="center">
+            <a href="{{url_for('login')}}"><button>Login</button></a>
+            <a href="{{url_for('cadastro')}}"><button>Cadastro</button></a>
+        </div>
+    {% endif %}
+    <div>
 </body>
 </html>

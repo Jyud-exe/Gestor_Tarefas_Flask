@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <style>
+        .end{
+            text-align: end;
+        }
+            .container{
+                width: 400px;
+                margin: 0 auto;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i>CADASTRE-SE</i></h2>
+        <hr>
+        <form action="/cadastro" method="post">
+            {{ cadform.hidden_tag() }}
+            <p><label for="nome">Nome:</label>
+            {{ cadform.nome() }}
+            <p><label for="email">Email:</label>
+            {{ cadform.email() }}
+            <p><label for="senha">Senha:</label>
+            {{ cadform.senha() }}
+            {{ cadform.senha.errors[0] if cadform.senha.errors }}
+            <p>
+                <ul>
+                    <li>senha deve ter pelo menos 8 caracteres</li>
+                    <li>senha deve conter pelo menos uma letra maiúscula</li>
+                    <li>senha deve conter pelo menos um número</li>
+                    <li>senha deve conter pelo menos um caractere especial</li>
+                </ul>
+            <label for="confirmar_senha">Confirmar Senha:</label>
+            {{ cadform.confirmar_senha() }}
+            {{ cadform.confirmar_senha.errors[0] if cadform.confirmar_senha.errors }}
+            {{ cadform.btn() }}
+                <p><div class="end">Já tem uma conta?<a href="{{url_for('login')}}"> Faça login</a></div>
+        </form>
+    </div>
+
+</body>
+</html>

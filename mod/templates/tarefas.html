@@ -13,9 +13,9 @@
         </span>
         <hr>
         <br><br>
-        <form action="" class="get">
+        <form action="/tarefas" class="get">
             {% for data, tarefa in agrupadas.items() %}
-                <h3 class="center">{{data}}</h3>
+                <h3 class="center">{{ data }}</h3>
                     {% for t in tarefa %}
                     <li style="display: flex; align-items: center; justify-content: space-between;">
                         <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
