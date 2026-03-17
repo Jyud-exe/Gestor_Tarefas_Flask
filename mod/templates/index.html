@@ -57,7 +57,7 @@
                     <h3 class="center">AMANHÃ</h3>
                         {% for t in tarefas %}
                             <li style="display: flex; align-items: center; justify-content: space-between;">
-                            <span>{{ t.time }} - <b>{{ t.user_tarefa }}</b></span>
+                            <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
                             <span>
                                 <a href="{{ url_for('editar', id=t.id) }}">Editar</a>
                                 <a href="{{ url_for('delete', id=t.id) }}">Delete</a>

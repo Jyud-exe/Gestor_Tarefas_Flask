@@ -41,7 +41,8 @@ def login():
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     cadform = cadForm()
-    if cadform.validate_on_submit():
+    if cadform.validate and cadform.is_submitted():
+        print('Formulário de cadastro válido, criando usuário!')
         user = cadform.save()
         login_user(user, remember=True)
         return redirect(url_for('home'))
