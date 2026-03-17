@@ -3,6 +3,7 @@ from mod import app
 from flask import render_template, redirect, url_for, request
 from mod.forms import TarefasForm, LoginForm, cadForm
 from mod.models import Tarefas
+from datetime import date
 from mod import db
 
 
@@ -19,11 +20,14 @@ def home():
         print('Formulário válido, salvando tarefa!')
         form.save()
         return redirect(request.referrer)
+    cadform = cadForm()
+    saudacao = cadform.saudacao()
     return render_template("index.html", 
         lista=lista, 
         form=form, 
         hoje=hoje, 
-        amanha=amanha)
+        amanha=amanha,
+        saudacao=saudacao)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -41,7 +45,7 @@ def login():
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     cadform = cadForm()
-    if cadform.validate and cadform.is_submitted():
+    if cadform.is_submitted() and cadform.validate():
         print('Formulário de cadastro válido, criando usuário!')
         user = cadform.save()
         login_user(user, remember=True)

@@ -22,7 +22,7 @@
     <div class="container">
         {% if current_user.is_authenticated %}
             <span style="display: flex; align-items: center; justify-content: space-between;">
-                <h2><I>GESTOR DE TAREFAS - {{ current_user.nome.split()[0] }}</I></h2>
+                <h2><I>GESTOR DE TAREFAS - {{ saudacao}} {{ current_user.nome.split()[0] }}!</I></h2>
                 <a class="end" href="{{url_for('todas_tarefas')}}"><button>Todas as Tarefas</button></a>
             </span>
             <div class="end"><a href="{{url_for('logout')}}"><button>Encerrar Sessão</button></a></div>
@@ -57,7 +57,8 @@
                     <h3 class="center">AMANHÃ</h3>
                         {% for t in tarefas %}
                             <li style="display: flex; align-items: center; justify-content: space-between;">
-                            <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
+                            <span>{{ t.time }} - <b>{{ t.tarefa
+                                 }}</b></span>
                             <span>
                                 <a href="{{ url_for('editar', id=t.id) }}">Editar</a>
                                 <a href="{{ url_for('delete', id=t.id) }}">Delete</a>

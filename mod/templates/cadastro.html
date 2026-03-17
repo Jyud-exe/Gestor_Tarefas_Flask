@@ -12,6 +12,9 @@
                 width: 400px;
                 margin: 0 auto;
             }
+            .red{
+                color: red;
+            }
     </style>
 </head>
 <body>
@@ -37,8 +40,8 @@
             <label for="confirmar_senha">Confirmar Senha:</label>
             {{ cadform.confirmar_senha() }}
             {{ cadform.confirmar_senha.errors[0] if cadform.confirmar_senha.errors }}
-            {{ cadform.btn() }}
-                <p><div class="end">Já tem uma conta?<a href="{{url_for('login')}}"> Faça login</a></div>
+            <div class="end">{{ cadform.btn() }}
+            <p>Já tem uma conta?<a href="{{url_for('login')}}"> Faça login</a></div>
         </form>
     </div>
 

@@ -2,7 +2,7 @@ from flask_login import current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import StringField, SubmitField, DateField, PasswordField
 from wtforms.validators import DataRequired, Email, EqualTo, email, Regexp
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from mod.models import Tarefas, User
 from flask_wtf import FlaskForm
 from mod import db
@@ -66,15 +66,13 @@ class LoginForm(FlaskForm):
         if user:
             if check_password_hash(user.senha, self.senha.data):
                 return user
-            else:
-                raise ValueError('Senha inválida!')
         else:
-            raise ValueError('Usuário inválido!')
+            raise ValueError('Email ou senha incorretos!')
 
 class cadForm(FlaskForm):
     nome = StringField('Nome', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    senha = PasswordField('Senha', validators=[DataRequired(), Regexp(r'(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])', message='A senha deve conter letras, números e caracteres especiais!')])
+    senha = PasswordField('Senha', validators=[DataRequired(), Regexp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@#$!%*?&]).{8,}$', message='Senha fraca!')])
     confirmar_senha = PasswordField('Confirmar Senha', validators=[DataRequired(), EqualTo('senha', message='As senhas devem ser iguais!')])
     btn = SubmitField('Cadastrar')
 
@@ -93,4 +91,17 @@ class cadForm(FlaskForm):
             db.session.add(novo_usuario)
             db.session.commit()
             return novo_usuario
+        
+    def saudacao(self):
+           hora = datetime.now().hour
+           if hora < 12:
+               return 'Bom dia,'
+           if hora < 18:
+               return 'Boa tarde,'
+           if hora < 24:
+               return 'Boa noite,'
+            
+
+
+    
    
