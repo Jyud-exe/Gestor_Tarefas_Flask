@@ -1,22 +1,22 @@
+from itsdangerous import SignatureExpired, BadSignature
 from flask_login import login_user, logout_user, login_required, current_user
 from mod import app
 from flask import render_template, redirect, url_for, request
 from mod.forms import TarefasForm, LoginForm, cadForm
-from mod.models import Tarefas
-from datetime import date
-from mod import db
+from mod.models import Tarefas, User
+from flask import jsonify
+from mod import db, serializer, mail
+from flask_mail import Message
 
 
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def home(): 
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
     form = TarefasForm()
     hoje = form.Hoje()
     amanha = form.Amanha() 
     lista = Tarefas.query.order_by(Tarefas.time.asc()).filter_by(user_tarefa=current_user.id).all()
-    if form.validate and form.is_submitted():
+    if form.validate() and form.is_submitted():
         print('Formulário válido, salvando tarefa!')
         form.save()
         return redirect(request.referrer)
@@ -31,26 +31,50 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
     form = LoginForm()
     if form.btn.data and form.validate_on_submit():
         user = form.logar()
-        if user:
-            login_user(user, remember=True)
-            return redirect(url_for('home'))
+        login_user(user, remember=True)
+        return redirect(url_for('home'))
     return render_template('login.html', form=form)
+
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     cadform = cadForm()
     if cadform.is_submitted() and cadform.validate():
-        print('Formulário de cadastro válido, criando usuário!')
-        user = cadform.save()
-        login_user(user, remember=True)
-        return redirect(url_for('home'))
+        cadform.save()
+        return redirect(url_for('verificacao'))
     return render_template('cadastro.html', cadform=cadform)
+
+
+@app.route('/confirmar_email/<token>')
+def confirmar_email(token):
+    try:
+        email = serializer.loads(token, salt='confirmar_email', max_age=1600)
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return 'Usuario não existe!'
+    except SignatureExpired:
+        return render_template('expirado.html')
+    except BadSignature:
+        return render_template('link_invalido.html')
+    user.is_verified = True
+    db.session.commit() 
+    return redirect(url_for('home'))
+
+
+@app.route('/status_confirmacao')
+def status_confirmacao():
+    if current_user.is_autheticated:
+        return jsonify({'confirmado': current_user.is_verified})
+    return jsonify({'confirmado': False})
+
+
+@app.route('/verificacao')
+def verificacao():
+    return render_template('verificacao.html')
+    
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -60,7 +84,7 @@ def delete(id):
         db.session.commit()
     if request.referrer:
         return redirect(request.referrer)
-    return redirect(url_for('home')) 
+    return redirect(url_for('home'))
 
 
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
@@ -85,3 +109,4 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+  
