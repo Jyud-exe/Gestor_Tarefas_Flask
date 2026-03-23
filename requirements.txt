@@ -6,4 +6,6 @@ Werkzeug
 flask_sqlalchemy
 flask_migrate
 dotenv
+flask_mail
+itsdangerous
 
