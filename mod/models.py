@@ -20,7 +20,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String, nullable=True, unique=True)
     senha = db.Column(db.String)
     tarefa_id = db.relationship('Tarefas', backref='user', lazy=True)
-    is_verified = db.Column(db.Boolean, default=False)
+    confirmado = db.Column(db.String, default='N')
 
     
 

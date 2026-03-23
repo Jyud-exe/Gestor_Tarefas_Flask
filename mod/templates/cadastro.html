@@ -39,7 +39,7 @@
                 </ul>
             <label for="confirmar_senha">Confirmar Senha:</label>
             {{ cadform.confirmar_senha() }}
-            {{ cadform.confirmar_senha.errors[0] if cadform.confirmar_senha.errors }}
+            <red>{{ cadform.confirmar_senha.errors[0] if cadform.confirmar_senha.errors }}</red>
             <div class="end">{{ cadform.btn() }}
             <p>Já tem uma conta?<a href="{{url_for('login')}}"> Faça login</a></div>
         </form>

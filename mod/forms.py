@@ -73,6 +73,7 @@ class LoginForm(FlaskForm):
         else:
             raise ValueError('Usuário não encontrado!')
         
+        
 
 class cadForm(FlaskForm):
     nome = StringField('Nome', validators=[DataRequired()])
@@ -91,19 +92,27 @@ class cadForm(FlaskForm):
                 nome=self.nome.data,
                 email=self.email.data,
                 senha=Senha,
-                is_verified=False
             )
-
             db.session.add(novo_usuario)
             token = serializer.dumps(self.email.data, salt='confirmar_email')
             link = url_for('confirmar_email', token=token, _external=True)
             msg = Message(
-                subject='Confirme seu Email!',
+                subject='Confirme seu E-mail!',
                 sender=current_app.config['MAIL_USERNAME'],
                 recipients=[self.email.data]
                 )
-            msg.body = f'Clique no link para confirmar seu Email: {link}'
+            msg.body = f'''Olá, {self.nome}
+
+            Obrigado por se cadastrar! Para concluir o processo, por favor confirme seu endereço de e-mail clicando no link abaixo:
+
+            {link}
+
+            e você não solicitou este cadastro, pode ignorar esta mensagem com segurança.
+
+            Atenciosamente,
+            Equipe de Suporte'''
             mail.send(msg)
+            db.session.commit()
             return novo_usuario
 
 

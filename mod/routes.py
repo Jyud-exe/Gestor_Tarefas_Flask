@@ -1,10 +1,9 @@
 from itsdangerous import SignatureExpired, BadSignature
 from flask_login import login_user, logout_user, login_required, current_user
 from mod import app
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, current_app
 from mod.forms import TarefasForm, LoginForm, cadForm
 from mod.models import Tarefas, User
-from flask import jsonify
 from mod import db, serializer, mail
 from flask_mail import Message
 
@@ -16,7 +15,7 @@ def home():
     hoje = form.Hoje()
     amanha = form.Amanha() 
     lista = Tarefas.query.order_by(Tarefas.time.asc()).filter_by(user_tarefa=current_user.id).all()
-    if form.validate() and form.is_submitted():
+    if form.validate and form.is_submitted():
         print('Formulário válido, salvando tarefa!')
         form.save()
         return redirect(request.referrer)
@@ -34,8 +33,30 @@ def login():
     form = LoginForm()
     if form.btn.data and form.validate_on_submit():
         user = form.logar()
-        login_user(user, remember=True)
-        return redirect(url_for('home'))
+        login_user(user)
+        autentic = User.query.get(current_user.id)
+        if autentic.confirmado == 'N':
+            token = serializer.dumps(autentic.email, salt='confirmar_email')
+            link = url_for('confirmar_email', token=token, _external=True)
+            msg = Message(
+                subject='Confirme seu E-mail!',
+                sender=current_app.config['MAIL_USERNAME'],
+                recipients=[autentic.email]
+            )
+            msg.body=f'''Olá, {autentic.nome}
+
+            Para finalizar seu cadastro e ter acesso completo à sua conta, basta clicar no link abaixo:
+
+            {link}
+
+            Se você não recebeu o link anteriormente ou ele expirou, este é o novo link válido para confirmação.
+
+            Caso não tenha solicitado este cadastro, desconsidere este e-mail.
+
+            Atenciosamente,
+            Equipe de Suporte'''
+            mail.send(msg)
+        return redirect(url_for('verificacao'))
     return render_template('login.html', form=form)
 
 
@@ -43,32 +64,25 @@ def login():
 def cadastro():
     cadform = cadForm()
     if cadform.is_submitted() and cadform.validate():
-        cadform.save()
-        return redirect(url_for('verificacao'))
+        user = cadform.save()
+        login_user(user)
+        return redirect(url_for('login'))
     return render_template('cadastro.html', cadform=cadform)
 
 
 @app.route('/confirmar_email/<token>')
 def confirmar_email(token):
     try:
-        email = serializer.loads(token, salt='confirmar_email', max_age=1600)
-        user = User.query.filter_by(email=email).first()
-        if not user:
-            return 'Usuario não existe!'
+        serializer.loads(token, salt='confirmar_email', max_age=1600)
     except SignatureExpired:
         return render_template('expirado.html')
     except BadSignature:
         return render_template('link_invalido.html')
-    user.is_verified = True
-    db.session.commit() 
-    return redirect(url_for('home'))
-
-
-@app.route('/status_confirmacao')
-def status_confirmacao():
-    if current_user.is_autheticated:
-        return jsonify({'confirmado': current_user.is_verified})
-    return jsonify({'confirmado': False})
+    confirm = User.query.get(current_user.id)
+    confirm.confirmado = 'S'
+    db.session.commit()
+    login_user(confirm, remember=True)
+    return render_template('confirmacao_sucesso.html')
 
 
 @app.route('/verificacao')

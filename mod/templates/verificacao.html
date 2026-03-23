@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Verifique seu Email</title>
+    <meta http-equiv="refresh" content="10;url=/login">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -52,22 +53,12 @@
 </head>
 <body>
     <div class="container">
+        
         <div class="icon">📧</div>
         <h1>Verifique sua caixa de entrada</h1>
+        <p>Notamos que seu endereço de e-mail ainda não foi confirmado.</p>
         <p>Enviamos um link de confirmação para o seu email.</p>
-        <div class="small">
-            Assim que confirmar, você será redirecionado automaticamente.
         </div>
-        <script>
-            setInterval(() => {
-                fetch('/status_confirmacao')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.confirmado)
-                        window.location.href = '/login'
-                    })
-            }, 3000)
-        </script>
     </div>
 </body>
 </html>
