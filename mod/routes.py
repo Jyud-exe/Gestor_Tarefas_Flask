@@ -31,9 +31,7 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if form.btn.data and form.validate_on_submit():
-        user = form.logar()
-        login_user(user)
+    if form.submit.data and form.validate_on_submit():
         autentic = User.query.get(current_user.id)
         if autentic.confirmado == 'N':
             token = serializer.dumps(autentic.email, salt='confirmar_email')
@@ -56,16 +54,16 @@ def login():
             Atenciosamente,
             Equipe de Suporte'''
             mail.send(msg)
-        return redirect(url_for('verificacao'))
+            return redirect(url_for('verificacao'))
+        else:
+            return redirect(url_for('home'))
     return render_template('login.html', form=form)
 
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     cadform = cadForm()
-    if cadform.is_submitted() and cadform.validate():
-        user = cadform.save()
-        login_user(user)
+    if cadform.validate_on_submit():
         return redirect(url_for('login'))
     return render_template('cadastro.html', cadform=cadform)
 

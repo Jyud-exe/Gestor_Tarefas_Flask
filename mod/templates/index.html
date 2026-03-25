@@ -1,52 +1,37 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Tarefas</title>
-    <style>
-        .center{
-            text-align: center;
-        }
-        .border{
-            border: solid rgb(0, 0, 0);
-            height: 25px;
-            width: 300px;
-        }
-        .end{
-            text-align: end;
-        }
-    </style>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-</head>
-<body>
-    <div class="container">
-            <span style="display: flex; align-items: center; justify-content: space-between;">
-                <h2><I>GESTOR DE TAREFAS - {{ saudacao}} {{ current_user.nome.split()[0] }}!</I></h2>
-                <a class="end" href="{{url_for('todas_tarefas')}}"><button>Todas as Tarefas</button></a>
-            </span>
-            <div class="end"><a href="{{url_for('logout')}}"><button>Encerrar Sessão</button></a></div>
-            <HR></HR>
-            <div class="end"><form action="/" method="post">
-            {{ form.hidden_tag() }}
-                {{ form.data() }}
-                <label for="time">Horário:</label>
-                {{ form.time() }}
-                <label for="tarefa">Tarefa:</label>
-                {{ form.tarefa() }}
-                {{ form.btn() }}    
-            </form></div>
-            <br><br><br>
+{% extends 'reprise.html' %}
+{% block content %}
+                <span style="display: flex; align-items: center; justify-content: space-between;">
+                    <h2><I>{{ saudacao}} {{ current_user.nome.split()[0] }}!</I></h2>
+                    <div class="end"><a class="btn btn-dark" href="{{url_for('todas_tarefas')}}">Todas as Tarefas</a></div>
+                </span>
+            
+                <br>
+
+                <form action="/" method="post">
+                <div class="row end">
+                {{ form.hidden_tag() }}
+                    <div class="col">{{ form.data(class='form-control') }}</div>
+                    
+                    <div class="col">{{ form.time(class='form-control') }}</div>
+                    
+                    <div class="col">{{ form.tarefa(class='form-control') }}</div>
+                    
+                    <div class="col">{{ form.btn(class='btn btn-dark') }}</div>
+                    
+                </div>
+                </form>
+            <hr>
+            <br><br>
             <ul>
                 <form action="/" method="get">
                     {% for data, tarefa in hoje.items() %}
-                    <h3 class="center">HOJE</h3>
+                    <h4 class="text-center">HOJE</h4>
                         {% for t in tarefa %}
                             <li style="display: flex; align-items: center; justify-content: space-between;">
                                 <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
                                 <span>
-                                    <a href="{{ url_for('editar', id=t.id) }}">Editar</a>
-                                    <a href="{{ url_for('delete', id=t.id) }}">Delete</a>
+                                    <a class="btn btn-dark" href="{{ url_for('editar', id=t.id) }}">Editar</a>
+                                    <a class="btn btn-danger" href="{{ url_for('delete', id=t.id) }}">Delete</a>
                                 </span>
                         </li>
                         {% endfor %}
@@ -54,14 +39,14 @@
                     <br><br>
                     {% endfor %}
                     {% for data, tarefas in amanha.items() %}
-                    <h3 class="center">AMANHÃ</h3>
+                    <h4 class="text-center">AMANHÃ</h4>
                         {% for t in tarefas %}
                             <li style="display: flex; align-items: center; justify-content: space-between;">
                             <span>{{ t.time }} - <b>{{ t.tarefa
                                  }}</b></span>
                             <span>
-                                <a href="{{ url_for('editar', id=t.id) }}">Editar</a>
-                                <a href="{{ url_for('delete', id=t.id) }}">Delete</a>
+                                <a class="btn btn-dark" href="{{ url_for('editar', id=t.id) }}">Editar</a>
+                                <a class="btn btn-danger" href="{{ url_for('delete', id=t.id) }}">Delete</a>
                             </span>
                         </li>
                         {% endfor %}
@@ -71,7 +56,4 @@
                 </form>
             </ul>
     </div>
-    <div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-</body>
-</html>
+{% endblock %}

@@ -1,15 +1,5 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add tarefa</title>
-    <style>
-        
-    </style>
-</head>
-<body>
-   <div class="container">
+{% extends 'reprise.html' %}
+{% block content %}
             <h2>ATUALIZAR TAREFAS</h2>
         <HR></HR>
         <div style="text-align: end;"><a style="text-align: end;" href="{{ url_for('home') }}"><button>voltar</button></a></div>
@@ -22,6 +12,4 @@
 
             <button type="submit">Salvar</button>
         </form>
-    </div>
-</body>
-</html>
+{% endblock %}

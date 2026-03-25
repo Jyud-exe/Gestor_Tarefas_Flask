@@ -1,49 +1,34 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
-    <style>
-        .end{
-            text-align: end;
-        }
-            .container{
-                width: 400px;
-                margin: 0 auto;
-            }
-            .red{
-                color: red;
-            }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2><i>CADASTRE-SE</i></h2>
+{% extends 'reprise.html' %}
+{% block content %}
+    <div class="center">
+        <h2><i>Cadastre-se</i></h2>
         <hr>
-        <form action="/cadastro" method="post">
-            {{ cadform.hidden_tag() }}
-            <p><label for="nome">Nome:</label>
-            {{ cadform.nome() }}
-            <p><label for="email">Email:</label>
-            {{ cadform.email() }}
-            <p><label for="senha">Senha:</label>
-            {{ cadform.senha() }}
-            {{ cadform.senha.errors[0] if cadform.senha.errors }}
-            <p>
-                <ul>
-                    <li>senha deve ter pelo menos 8 caracteres</li>
-                    <li>senha deve conter pelo menos uma letra maiúscula</li>
-                    <li>senha deve conter pelo menos um número</li>
-                    <li>senha deve conter pelo menos um caractere especial</li>
-                </ul>
-            <label for="confirmar_senha">Confirmar Senha:</label>
-            {{ cadform.confirmar_senha() }}
-            <red>{{ cadform.confirmar_senha.errors[0] if cadform.confirmar_senha.errors }}</red>
-            <div class="end">{{ cadform.btn() }}
-            <p>Já tem uma conta?<a href="{{url_for('login')}}"> Faça login</a></div>
-        </form>
-    </div>
+        <div class="form-control shadow">
+            <form action="/cadastro" method="post">
+                {{ cadform.hidden_tag() }}
+                <label for="nome">Nome:</label>
+                {{ cadform.nome(class="form-control") }}
 
-</body>
-</html>
+                <p></p><label for="email">Email:</label>
+                {{ cadform.email(class="form-control") }}</p>
+                
+                <label for="senha">Senha:</label>
+                {{ cadform.senha(class="form-control") }}
+                <div class="red">{{ cadform.senha.errors[0] }}</div>
+                    <ul>
+                        <li>deve ter pelo menos 8 caracteres</li>
+                        <li>deve conter pelo menos uma letra maiúscula</li>
+                        <li>deve conter pelo menos um número</li>
+                        <li>deve conter pelo menos um caractere especial</li>
+                    </ul>
+                    
+                <label for="confirmar_senha">Confirmar Senha:</label>
+                <p>{{ cadform.confirmar_senha(class="form-control") }}
+                <div class="red end">{{ cadform.email.errors[0] }}</div>
+                
+                <p class="text-center">{{ cadform.btn(class="btn btn-dark col-6") }}</p>
+                <p class="text-center">Já tem uma conta?<a href="{{url_for('login')}}"> Faça login</a>
+            </form>
+    </div>
+    </div>
+{% endblock %}

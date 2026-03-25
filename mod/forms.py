@@ -1,8 +1,8 @@
-from flask_login import current_user
-from flask import app, redirect, render_template, url_for, current_app
+from flask_login import current_user, login_user
+from flask import url_for, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import StringField, SubmitField, DateField, PasswordField
-from wtforms.validators import DataRequired, Email, EqualTo, email, Regexp
+from wtforms.validators import DataRequired, Email, EqualTo, email, Regexp, ValidationError
 from datetime import date, timedelta, datetime
 from mod.models import Tarefas, User
 from flask_wtf import FlaskForm
@@ -12,7 +12,7 @@ from mod import db, serializer, mail
 class TarefasForm(FlaskForm):
     data = DateField('Data')
     time = StringField('Horário', validators=[DataRequired()], render_kw={"placeholder": "HH:MM"})
-    tarefa = StringField('Tarefa', validators=[DataRequired()])
+    tarefa = StringField('Tarefa', validators=[DataRequired()], render_kw={"placeholder": "Tarefa"})
     btn = SubmitField('Adicionar')
 
     def save(self):
@@ -61,17 +61,18 @@ class TarefasForm(FlaskForm):
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     senha = PasswordField('Senha', validators=[DataRequired()])
-    btn = SubmitField('Login')
+    submit = SubmitField('Login')
 
-    def logar(self):
-        user = User.query.filter_by(email=self.email.data).first()
+    def validate_email(self, field):
+        user = User.query.filter_by(email=field.data).first()
         if user:
             if check_password_hash(user.senha, self.senha.data):
-                return user
+                return login_user(user)
+                
             else:
-                raise ValueError('Email ou senha incorretos!')
+                raise ValidationError('Email ou senha incorretos!')
         else:
-            raise ValueError('Usuário não encontrado!')
+            raise ValidationError('Usuário não encontrado!')
         
         
 
@@ -79,13 +80,14 @@ class cadForm(FlaskForm):
     nome = StringField('Nome', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     senha = PasswordField('Senha', validators=[DataRequired(), Regexp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@#$!%*?&]).{8,}$', message='Senha fraca!')])
-    confirmar_senha = PasswordField('Confirmar Senha', validators=[DataRequired(), EqualTo('senha', message='As senhas devem ser iguais!')])
+    confirmar_senha = PasswordField('Confirmar Senha', validators=[DataRequired()])
     btn = SubmitField('Cadastrar')
 
-    def save(self):
-        user = User.query.filter_by(email=self.email.data).first()
-        if user:
-            raise ValueError('Email já cadastrado!')
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('Email já cadastrado!')
+        if self.senha != self.confirmar_senha:
+            raise ValidationError('Senhas devem ser iguais!')
         else:
             Senha = generate_password_hash(self.senha.data)
             novo_usuario = User(
