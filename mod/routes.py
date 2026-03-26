@@ -33,15 +33,15 @@ def login():
     form = LoginForm()
     if form.submit.data and form.validate_on_submit():
         autentic = User.query.get(current_user.id)
-        if autentic.confirmado == 'N':
-            token = serializer.dumps(autentic.email, salt='confirmar_email')
+        if autentic.confirmado == False:
+            token = serializer.dumps(autentic.id, salt='confirmar_email')
             link = url_for('confirmar_email', token=token, _external=True)
             msg = Message(
                 subject='Confirme seu E-mail!',
                 sender=current_app.config['MAIL_USERNAME'],
                 recipients=[autentic.email]
             )
-            msg.body=f'''Olá, {autentic.nome}
+            msg.body=f'''Olá, {current_user.nome}
 
             Para finalizar seu cadastro e ter acesso completo à sua conta, basta clicar no link abaixo:
 
@@ -64,24 +64,45 @@ def login():
 def cadastro():
     cadform = cadForm()
     if cadform.validate_on_submit():
-        return redirect(url_for('login'))
+        autentic = User.query.get(current_user.id)
+        if autentic.confirmado == False:
+            token = serializer.dumps(autentic.id, salt='confirmar_email')
+            link = url_for('confirmar_email', token=token, _external=True)
+            msg = Message(
+                subject='Confirme seu E-mail!',
+                sender=current_app.config['MAIL_USERNAME'],
+                recipients=[autentic.email]
+            )
+            msg.body=f'''Olá, {current_user.nome}
+
+            Para finalizar seu cadastro e ter acesso completo à sua conta, basta clicar no link abaixo:
+
+            {link}
+
+            Se você não recebeu o link anteriormente ou ele expirou, este é o novo link válido para confirmação.
+
+            Caso não tenha solicitado este cadastro, desconsidere este e-mail.
+
+            Atenciosamente,
+            Equipe de Suporte'''
+            mail.send(msg)
+        return redirect(url_for('verificacao'))
     return render_template('cadastro.html', cadform=cadform)
 
 
 @app.route('/confirmar_email/<token>')
 def confirmar_email(token):
     try:
-        serializer.loads(token, salt='confirmar_email', max_age=1600)
+        user = serializer.loads(token, salt='confirmar_email', max_age=1600)
     except SignatureExpired:
         return render_template('expirado.html')
     except BadSignature:
         return render_template('link_invalido.html')
-    confirm = User.query.get(current_user.id)
-    confirm.confirmado = 'S'
+    confirm = User.query.get(user)
+    confirm.confirmado = True
     db.session.commit()
-    login_user(confirm, remember=True)
     return render_template('confirmacao_sucesso.html')
-
+    
 
 @app.route('/verificacao')
 def verificacao():

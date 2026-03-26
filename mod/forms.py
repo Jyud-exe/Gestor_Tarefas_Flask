@@ -68,7 +68,6 @@ class LoginForm(FlaskForm):
         if user:
             if check_password_hash(user.senha, self.senha.data):
                 return login_user(user)
-                
             else:
                 raise ValidationError('Email ou senha incorretos!')
         else:
@@ -86,7 +85,7 @@ class cadForm(FlaskForm):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email já cadastrado!')
-        if self.senha != self.confirmar_senha:
+        if self.senha.data != self.confirmar_senha.data:
             raise ValidationError('Senhas devem ser iguais!')
         else:
             Senha = generate_password_hash(self.senha.data)
@@ -94,26 +93,9 @@ class cadForm(FlaskForm):
                 nome=self.nome.data,
                 email=self.email.data,
                 senha=Senha,
+                confirmado=False
             )
             db.session.add(novo_usuario)
-            token = serializer.dumps(self.email.data, salt='confirmar_email')
-            link = url_for('confirmar_email', token=token, _external=True)
-            msg = Message(
-                subject='Confirme seu E-mail!',
-                sender=current_app.config['MAIL_USERNAME'],
-                recipients=[self.email.data]
-                )
-            msg.body = f'''Olá, {self.nome}
-
-            Obrigado por se cadastrar! Para concluir o processo, por favor confirme seu endereço de e-mail clicando no link abaixo:
-
-            {link}
-
-            e você não solicitou este cadastro, pode ignorar esta mensagem com segurança.
-
-            Atenciosamente,
-            Equipe de Suporte'''
-            mail.send(msg)
             db.session.commit()
             return novo_usuario
 
