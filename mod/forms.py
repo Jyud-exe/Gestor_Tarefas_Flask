@@ -87,17 +87,17 @@ class cadForm(FlaskForm):
             raise ValidationError('Email já cadastrado!')
         if self.senha.data != self.confirmar_senha.data:
             raise ValidationError('Senhas devem ser iguais!')
-        else:
-            Senha = generate_password_hash(self.senha.data)
-            novo_usuario = User(
-                nome=self.nome.data,
-                email=self.email.data,
-                senha=Senha,
-                confirmado=False
-            )
-            db.session.add(novo_usuario)
-            db.session.commit()
-            return novo_usuario
+       
+        Senha = generate_password_hash(self.senha.data)
+        novo_usuario = User(
+            nome=self.nome.data,
+            email=self.email.data,
+            senha=Senha,
+            confirmado=False
+        )
+        db.session.add(novo_usuario)
+        db.session.commit()
+        return login_user(novo_usuario)
 
 
     def saudacao(self):
