@@ -1,6 +1,6 @@
 ﻿﻿# Gestor de Tarefas
 
-Aplicação web de gerenciamento de tarefas com autenticação de usuários, desenvolvida para consolidar conhecimentos em back-end com Flask.
+Aplicação web de gerenciamento de tarefas com autenticação de usuários.
 
 O sistema permite que cada usuário gerencie suas próprias tarefas de forma independente, com operações completas de CRUD.
 
