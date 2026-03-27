@@ -7,7 +7,8 @@ from datetime import date, timedelta, datetime
 from mod.models import Tarefas, User
 from flask_wtf import FlaskForm
 from flask_mail import Message
-from mod import db, serializer, mail
+from mod import db
+import re
 
 class TarefasForm(FlaskForm):
     data = DateField('Data')
@@ -49,7 +50,7 @@ class TarefasForm(FlaskForm):
         return amanha
     
     def agrupadas(self):
-        tarefas = Tarefas.query.filter_by(user_tarefa=current_user.id).order_by(Tarefas.time.asc()).all()
+        tarefas = Tarefas.query.filter_by(user_tarefa=current_user.id).order_by(Tarefas.time.desc()).all()
         agrupadas = {}
         for t in tarefas:
             data = t.data.strftime('%d/%m/%Y')
@@ -60,7 +61,7 @@ class TarefasForm(FlaskForm):
     
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
-    senha = PasswordField('Senha', validators=[DataRequired()])
+    senha = StringField('Senha', validators=[DataRequired()])
     submit = SubmitField('Login')
 
     def validate_email(self, field):
@@ -78,16 +79,32 @@ class LoginForm(FlaskForm):
 class cadForm(FlaskForm):
     nome = StringField('Nome', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    senha = PasswordField('Senha', validators=[DataRequired(), Regexp(r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@#$!%*?&]).{8,}$', message='Senha fraca!')])
-    confirmar_senha = PasswordField('Confirmar Senha', validators=[DataRequired()])
+    senha = StringField('Senha', validators=[DataRequired()])
+    confirmar_senha = StringField('Confirmar Senha', validators=[DataRequired()])
     btn = SubmitField('Cadastrar')
+
+    def senha_forte(self, senha):
+        return(
+            len(senha) >= 8 and
+            re.search(r"[A-Z]", senha) and
+            re.search(r"[a-z]", senha) and
+            re.search(r"[\d]", senha) and
+            re.search(r"[@#$%&]", senha))
+            
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email já cadastrado!')
-        if self.senha.data != self.confirmar_senha.data:
+        
+    def validate_senha(self, field):
+        if not self.senha_forte(field.data):
+            raise ValidationError('Senha Fraca!')
+
+    def validate_confirmar_senha(self, field):
+        if self.senha.data != field.data:
             raise ValidationError('Senhas devem ser iguais!')
        
+    def save(self):
         Senha = generate_password_hash(self.senha.data)
         novo_usuario = User(
             nome=self.nome.data,

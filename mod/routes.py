@@ -64,6 +64,7 @@ def login():
 def cadastro():
     cadform = cadForm()
     if cadform.validate_on_submit():
+        cadform.save()
         autentic = User.query.get(current_user.id)
         if autentic.confirmado == False:
             token = serializer.dumps(autentic.id, salt='confirmar_email')

@@ -8,4 +8,5 @@ flask_migrate
 dotenv
 flask_mail
 itsdangerous
+re
 

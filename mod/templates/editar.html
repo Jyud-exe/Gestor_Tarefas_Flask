@@ -1,15 +1,15 @@
 {% extends 'reprise.html' %}
 {% block content %}
-            <h2>ATUALIZAR TAREFAS</h2>
+        <div style="display: flex;  align-items: center;  justify-content: space-between;">
+            <h2 class="center">Atualizando Tarefa</h2>
+            <a class="btn-sm btn btn-danger" href="{{url_for('home')}}">cancelar</a>
+        </div>
         <HR></HR>
-        <div style="text-align: end;"><a style="text-align: end;" href="{{ url_for('home') }}"><button>voltar</button></a></div>
         <form action="" method="POST">
-            <label for="titulo">Tarefa:</label>
-            <input type="text" name="titulo" value="{{ tarefa.tarefa }}" required>
-
-            <label for="horario">Horário:</label>
-            <input type="text" name="horario" value="{{ tarefa.time }}" required>
-
-            <button type="submit">Salvar</button>
+            <div class="row col-7">
+                <h5 class="col-1">Tarefa:</h5><div class="col-2"> <input class="shadow form-control" type="text" name="titulo" value="{{ tarefa.tarefa }}" required></div>
+                <h5 class="col-1">Hora:</h5><div class="col-2"> <input class="shadow form-control" type="text" name="horario" value="{{ tarefa.time }}" required></div>
+                <button class="col-1 btn-sm btn btn-dark" type="submit"> Salvar</button>
+            </div>
         </form>
 {% endblock %}

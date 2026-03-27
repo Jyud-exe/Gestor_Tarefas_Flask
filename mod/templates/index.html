@@ -10,11 +10,11 @@
                 <form action="/" method="post">
                 <div class="row end">
                 {{ form.hidden_tag() }}
-                    <div class="col">{{ form.data(class='form-control') }}</div>
+                    <div class="col">{{ form.data(class='shadow form-control') }}</div>
                     
-                    <div class="col">{{ form.time(class='form-control') }}</div>
+                    <div class="col">{{ form.time(class='shadow form-control') }}</div>
                     
-                    <div class="col">{{ form.tarefa(class='form-control') }}</div>
+                    <div class="col">{{ form.tarefa(class='shadow form-control') }}</div>
                     
                     <div class="col">{{ form.btn(class='btn btn-dark') }}</div>
                     
@@ -28,10 +28,10 @@
                     <h4 class="text-center">HOJE</h4>
                         {% for t in tarefa %}
                             <li style="display: flex; align-items: center; justify-content: space-between;">
-                                <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
+                                <span><h5>{{ t.time }} - <b>{{ t.tarefa }}</b></h5></span>
                                 <span>
-                                    <a class="btn btn-dark" href="{{ url_for('editar', id=t.id) }}">Editar</a>
-                                    <a class="btn btn-danger" href="{{ url_for('delete', id=t.id) }}">Delete</a>
+                                    <a class="btn btn-sm btn-dark" href="{{ url_for('editar', id=t.id) }}">Editar</a>
+                                    <a class="btn-sm btn btn-danger" href="{{ url_for('delete', id=t.id) }}">Delete</a>
                                 </span>
                         </li>
                         {% endfor %}
@@ -42,11 +42,11 @@
                     <h4 class="text-center">AMANHÃ</h4>
                         {% for t in tarefas %}
                             <li style="display: flex; align-items: center; justify-content: space-between;">
-                            <span>{{ t.time }} - <b>{{ t.tarefa
+                            <span><h5>{{ t.time }} - <b>{{ t.tarefa</h5>
                                  }}</b></span>
                             <span>
-                                <a class="btn btn-dark" href="{{ url_for('editar', id=t.id) }}">Editar</a>
-                                <a class="btn btn-danger" href="{{ url_for('delete', id=t.id) }}">Delete</a>
+                                <a class="btn-sm btn btn-dark" href="{{ url_for('editar', id=t.id) }}">Editar</a>
+                                <a class="btn-sm btn btn-danger" href="{{ url_for('delete', id=t.id) }}">Delete</a>
                             </span>
                         </li>
                         {% endfor %}

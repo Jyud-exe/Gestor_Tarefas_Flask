@@ -11,10 +11,11 @@
 
                 <p></p><label for="email">Email:</label>
                 {{ cadform.email(class="form-control") }}</p>
-                
+                <div class="red end">{{ cadform.email.errors[0] }}</div>
+
                 <label for="senha">Senha:</label>
                 {{ cadform.senha(class="form-control") }}
-                <div class="red">{{ cadform.senha.errors[0] }}</div>
+                <div class="red end">{{ cadform.senha.errors[0] }}</div>
                     <ul>
                         <li>deve ter pelo menos 8 caracteres</li>
                         <li>deve conter pelo menos uma letra maiúscula</li>
@@ -22,10 +23,9 @@
                         <li>deve conter pelo menos um caractere especial</li>
                     </ul>
                     
-                <label for="confirmar_senha">Confirmar Senha:</label>
-                <p>{{ cadform.confirmar_senha(class="form-control") }}
-                <div class="red end">{{ cadform.email.errors[0] }}</div>
-                
+                <p><label for="confirmar_senha">Confirmar Senha:</label>
+                {{ cadform.confirmar_senha(class="form-control") }}
+                <div class="red end">{{ cadform.confirmar_senha.errors[0] }}</div>
                 <p class="text-center">{{ cadform.btn(class="btn btn-dark col-6") }}</p>
                 <p class="text-center">Já tem uma conta?<a href="{{url_for('login')}}"> Faça login</a>
             </form>

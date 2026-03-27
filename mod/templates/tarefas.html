@@ -1,20 +1,21 @@
 {% extends 'reprise.html' %}
 {% block content %}
         <span style="display: flex; align-items: center; justify-content: space-between;">
-           <h2><i>Todas as Tarefas</i></h2>
-           <a class="btn btn-danger" href="{{url_for('logout')}}">Sair</a>
+            <a class="btn-sm btn btn-dark" href="{{url_for('home')}}">Voltar</a>
+            <h2><i>Todas as Tarefas</i></h2>
+        <a class="btn-sm btn btn-danger" href="{{url_for('logout')}}">Encerrar</a>
         </span>
         <hr>
         <br><br>
         <form action="/tarefas" class="get">
             {% for data, tarefa in agrupadas.items() %}
-                <h3 class="center">{{ data }}</h3>
+                <h3 class="text-center">{{ data }}</h3>
                     {% for t in tarefa %}
                     <li style="display: flex; align-items: center; justify-content: space-between;">
-                        <span>{{ t.time }} - <b>{{ t.tarefa }}</b></span>
+                        <span><h5>{{ t.time }} - <b>{{ t.tarefa }}</b></h5></span>
                         <span>
-                            <a class="btn btn-dark" href="{{url_for('editar', id=t.id)}}">Editar</a>
-                            <a class="btn btn-danger" href="{{url_for('delete', id=t.id)}}">Delete</a>
+                            <a class="btn-sm btn btn-dark" href="{{url_for('editar', id=t.id)}}">Editar</a>
+                            <a class="btn-sm btn btn-danger" href="{{url_for('delete', id=t.id)}}">Delete</a>
                         </span></li>
                     </li>         
                     {% endfor %}
